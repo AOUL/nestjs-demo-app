@@ -4,7 +4,7 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
-  @Column({ length: 60 })
+  @Column({ length: 60, unique: true })
   name: string;
   @Column({ nullable: false })
   qte: number;

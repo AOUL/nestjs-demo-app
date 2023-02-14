@@ -19,8 +19,8 @@ export class ProductsController {
   }
 
   @Post('create')
-  createProduct(@Body() product: CreateProductDTO) {
-    return this.productsService.createProduct(product);
+  createProduct(@Body() productInput: CreateProductDTO) {
+    return this.productsService.createProduct(productInput);
   }
 
   @Put('update/:id')

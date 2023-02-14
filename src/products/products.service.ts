@@ -1,45 +1,23 @@
+import { Product } from './product.entity';
 import { UpdateProductDTO } from './update-product.dto';
 import { CreateProductDTO } from './create-product.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { product } from './product.interface';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
-  products: Array<product> = [
-    {
-      id: 1,
-      name: 'Azuz probook',
-      qte: 10,
-      price: 55000,
-    },
-    {
-      id: 2,
-      name: 'Huawei Y8s',
-      qte: 16,
-      price: 2500,
-    },
-    {
-      id: 3,
-      name: 'Huawei Y8s mate',
-      qte: 16,
-      price: 2200,
-    },
-    {
-      id: 4,
-      name: 'Desk',
-      qte: 16,
-      price: 2200,
-    },
-  ];
+  productRepository = this.entityManager.getRepository(Product);
+
+  constructor(private readonly entityManager: EntityManager) {}
 
   // find all products
-  findAllProducts() {
-    return this.products;
+  async findAllProducts(): Promise<Product[]> {
+    return await this.productRepository.find();
   }
 
   // Get product by id
-  findProductById(productId: number) {
-    const productSelected = this.products.find((product) => product.id == productId);
+  async findProductById(productId: number): Promise<Product> {
+    const productSelected = await this.productRepository.findOne({ where: { id: productId } });
 
     if (!productSelected) throw new NotFoundException([`There is no product with the refrence ${productId}`]);
 
@@ -47,25 +25,36 @@ export class ProductsService {
   }
 
   // Create product
-  createProduct(product: CreateProductDTO) {
-    const createdProduct = Object.assign({ id: this.products.length + 1 }, product);
-    this.products.push(createdProduct);
-    return createdProduct;
+  async createProduct(product: CreateProductDTO) {
+    const productExist = await this.productRepository.findOne({ where: { name: product.name } });
+
+    if (productExist)
+      throw new HttpException(
+        `A product with name ${product.name} is already exist !`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
+    // perform some conversion options before save
+    product.qte = Number(product.qte);
+
+    return await this.productRepository.save(product);
   }
 
   // Update product
-  updateProduct(product: UpdateProductDTO, productId: number) {
-    const selectedProduct = this.findProductById(productId);
+  async updateProduct(product: UpdateProductDTO, productId: number) {
+    const selectedProduct = await this.findProductById(productId);
 
-    selectedProduct.name = product.name;
-    selectedProduct.price = product.price;
-    selectedProduct.qte = product.qte;
+    product.name = selectedProduct.name;
+    product.price = selectedProduct.price;
+    product.qte = selectedProduct.qte;
+
+    return await this.productRepository.save(product);
   }
 
   // Delete product
-  deleteProduct(productId: number) {
-    this.findProductById(productId);
+  async deleteProduct(productId: number) {
+    const productSelected = await this.findProductById(productId);
 
-    this.products = this.products.filter((product) => product.id != productId);
+    return await this.productRepository.remove(productSelected);
   }
 }
