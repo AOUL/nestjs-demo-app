@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { ProductDetail } from './../product-detail/product-detail.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity({ name: 'product' })
 export class Product {
@@ -10,4 +11,11 @@ export class Product {
   qte: number;
   @Column({ nullable: false })
   price: number;
+
+  @OneToOne(() => ProductDetail, (productDetails) => productDetails.product, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinColumn({ name: 'productdetails-id' })
+  productDetails: ProductDetail;
 }

@@ -17,7 +17,10 @@ export class ProductsService {
 
   // Get product by id
   async findProductById(productId: number): Promise<Product> {
-    const productSelected = await this.productRepository.findOne({ where: { id: productId } });
+    const productSelected = await this.productRepository.findOne({
+      where: { id: productId },
+      relations: { productDetails: true },
+    });
 
     if (!productSelected) throw new NotFoundException([`There is no product with the refrence ${productId}`]);
 
