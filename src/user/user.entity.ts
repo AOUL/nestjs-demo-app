@@ -9,6 +9,6 @@ export class User {
   email: string;
   @Column({ length: 100 })
   password: string;
-  @OneToMany(() => Photo, (photo) => photo.user, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @OneToMany(() => Photo, (photo) => photo.user, { onDelete: 'CASCADE', onUpdate: 'CASCADE', nullable: false })
   photos: Photo[];
 }

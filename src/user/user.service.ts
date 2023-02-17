@@ -23,7 +23,7 @@ export class UserService {
 
   // Create a user
   async createUser(user: CreateUserDTO) {
-    const userExist = this.findUserByEmail(user.email);
+    const userExist = await this.findUserByEmail(user.email);
 
     if (userExist) throw new ConflictException([`the email ${user.email} is already exist !`]);
 

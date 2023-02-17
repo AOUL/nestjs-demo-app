@@ -7,7 +7,7 @@ export class Photo {
   id: number;
   @Column({ length: 100 })
   url: string;
-  @ManyToOne(() => User, (user) => user.photos)
+  @ManyToOne(() => User, (user) => user.photos, { nullable: false })
   @JoinColumn({ name: 'user_id' })
   user: User;
 }
