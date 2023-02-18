@@ -13,8 +13,8 @@ export class QuestionController {
   }
 
   // Create question
-  @Post('create/:category-id')
-  createQuestion(@Body() questionInput: CreateQuestionDTO, @Param('category-id') categoryId: number) {
+  @Post('create/:categoryid')
+  createQuestion(@Body() questionInput: CreateQuestionDTO, @Param('categoryid') categoryId: number) {
     return this.questionService.createQuestion(questionInput, categoryId);
   }
 }
